@@ -8,9 +8,11 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     
     @IBAction func postDataButton(_ sender: Any) {
+        activityIndicator.startAnimating()
         let url = URL(string: "https://jsonplaceholder.typicode.com/posts")!
         
         var request = URLRequest(url: url)
@@ -33,29 +35,40 @@ class ViewController: UIViewController {
             if let data = data, let dataString = String(data: data, encoding: .utf8) {
                 print(dataString)
             }
+            
+            DispatchQueue.main.async {
+                self.activityIndicator.stopAnimating()
+            }
         }
         
         task.resume()
     }
     
     @IBAction func fetchDataButton(_ sender: Any) {
+        activityIndicator.startAnimating()
         let url = URL(string: "https://jsonplaceholder.typicode.com/todos/1")!
         let task = URLSession.shared.dataTask(with: url) {data, response, error in
+            
             if let error = error {
-                print("Error", error)
+                print("Error:", error)
                 return
             }
             
             let json = try! JSONSerialization.jsonObject(with: data!, options: [])
             
             print(json)
+            
+            DispatchQueue.main.async {
+                self.activityIndicator.stopAnimating()
+            }
+            
         }
         
         task.resume()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        activityIndicator.hidesWhenStopped = true
     }
     
     
